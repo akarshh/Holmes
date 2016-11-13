@@ -4,7 +4,6 @@ import urllib.request, urllib.parse, urllib.error, base64
 from twilio.rest import TwilioRestClient
 from imgurpython import ImgurClient
 import time
-from PIL import Image
 from ISStreamer.Streamer import Streamer
 
 imgurId = "71d7de68d35561e"
