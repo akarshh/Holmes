@@ -72,7 +72,7 @@ def identify(image):
                 #Code added to push to Initial State
                 streamer.log("Name:", "Unknown")
                 streamer.log("Status:", "Inside")
-                streamer.log("Recognized:", "No")
+                streamer.log("Recognized:", ":thumbsdown:")
             else:
                 pId = key['candidates'][0]['personId']
                 conn.request("GET", "/face/v1.0/persongroups/contacts/persons/{}?".format(pId), "{null}",
@@ -83,7 +83,7 @@ def identify(image):
                 print(data['name'])
                 streamer.log("Name:", data['name'])
                 streamer.log("Status:", "Inside")
-                streamer.log("Recognized:", "Yes")
+                streamer.log("Recognized:", ":thumbsup:")
         conn.close()
     except Exception as e:
         print("[identifyErrno {0}] {1}".format(e.errno, e.strerror))
@@ -185,7 +185,7 @@ def main():
     #add_face("Akarsh", "akarsh3.jpeg")
     #create_person("Akarsh", "akarsh1.jpeg")
     #train()
-    identify("akarsh.jpeg")
+    identify("team.jpeg")
     #alert("+12674750425", "+12674607556", "Someone unknown is by the door.\n", "test.jpg")
     #identify("twopeople.jpeg")
 
