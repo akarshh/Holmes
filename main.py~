@@ -6,6 +6,7 @@ from imgurpython import ImgurClient
 import time
 from ISStreamer.Streamer import Streamer
 import subprocess
+from datetime import datetime
 
 imgurId = "71d7de68d35561e"
 imgurSec = "ad08635e559a3d4faee8347900733df066af3177"
@@ -61,7 +62,7 @@ def identify(image):
 
     #Line added to push to Initial State
     streamer = Streamer(bucket_name="TRAKR", bucket_key="VandyHacks",
-                        access_key="AmGWapG1yu5XWZmVxudVeJGXcTRFOIuy")
+                        access_key="02JRVjhxxM9eIwKrvXN44TWnzUotO0aZ")
     try:
         conn = http.client.HTTPSConnection('api.projectoxford.ai')
         conn.request("POST", "/face/v1.0/identify?", body, jsonHeaders)
@@ -84,7 +85,7 @@ def identify(image):
                 streamer.log("Name:", "Unknown")
                 streamer.log("Status:", "Awaiting")
                 streamer.log("Recognized:", ":thumbsdown:")
-                streamer.log("People at home", counter)
+                streamer.log("People at home :house:", counter)
             else:
                 pId = key['candidates'][0]['personId']
                 conn.request("GET", "/face/v1.0/persongroups/contacts/persons/{}?".format(pId), "{null}",
@@ -97,8 +98,19 @@ def identify(image):
                 streamer.log("Name:", data['name'])
                 streamer.log("Status:", "Inside")
                 streamer.log("Recognized:", ":thumbsup:")
+                now = datetime.now()
+                today7am = now.replace(hour=7, minute=0, second=0, microsecond=0)
+                today8pm = now.replace(hour=20, minute=0, second=0, microsecond=0)
+                if now > today8pm or now < today7am:
+                    streamer.log("Time of entry :crescent_moon:", datetime.now().strftime("%H:%M:%S"))
+                else:
+                    streamer.log("Time of entry :sunny:", datetime.now().strftime("%H:%M:%S"))
                 counter = counter + 1
-                streamer.log("People at home", counter)
+                streamer.log("People at home :house:", counter)
+        if len(arrNames) == 1:
+            conn.request("POST", "/face/v1.0/persongroups/contacts/persons/{}/persistedFaces?".format(pId),
+                         convert_to_bin(image), headers)
+            train()
         if len(arrNames) > 0:
             welcome(arrNames)
         conn.close()
@@ -107,6 +119,7 @@ def identify(image):
         f2.close()
         streamer.close()
     except Exception as e:
+        print(e)
         print("[identifyErrno {0}] {1}".format(e.errno, e.strerror))
     #if face does not exist in person group, twilio unknown
 
@@ -187,14 +200,15 @@ def upload(image):
         image = client.upload_from_path(image, anon=True)
         return image["link"]
 
+
 def welcome(arrNames):
     if len(arrNames) == 1:
-        msg = "Welcome {}. Have a seat".format(arrNames[0])
+        msg = "Hi {}, I am Alexa. Have a seat. What music can I play for you?".format(arrNames[0])
     else:
-        msg = "Welcome "
+        msg = "Hi "
         for i in range(len(arrNames) - 1):
             msg = msg + arrNames[i] + ', '
-        msg = msg + 'and' + arrNames[len(arrNames) - 1] + '. Have a seat'
+        msg = msg + 'and' + arrNames[len(arrNames) - 1] + ', I am Alexa.Have a seat. What music would you like?'
     params = ""
     # AccessTokenUri = "https://api.cognitive.microsoft.com/sts/v1.0/issueToken";
     AccessTokenHost = "api.cognitive.microsoft.com"
@@ -233,7 +247,7 @@ def welcome(arrNames):
     f = open('sample', 'wb')
     f.write(data)
     f.close()
-    subprocess.call("gst-launch-1.0 filesrc location= /home/root/vandy/TRAKR/sample ! wavparse ! pulsesink");
+    subprocess.call("gst-launch-1.0 filesrc location= /home/root/vandy/TRAKR/sample ! wavparse ! pulsesink",shell=True);
 
 
 # def pushToInitialState(data):
