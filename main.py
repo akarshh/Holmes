@@ -76,6 +76,7 @@ def identify(image):
                 streamer.log("Name:", "Unknown")
                 streamer.log("Status:", "Inside")
                 streamer.log("Recognized:", ":thumbsdown:")
+                streamer.log("Confidence:", 0)
             else:
                 pId = key['candidates'][0]['personId']
                 conn.request("GET", "/face/v1.0/persongroups/contacts/persons/{}?".format(pId), "{null}",
@@ -87,6 +88,7 @@ def identify(image):
                 streamer.log("Name:", data['name'])
                 streamer.log("Status:", "Inside")
                 streamer.log("Recognized:", ":thumbsup:")
+                streamer.log("Confidence:",  key['candidates'][0]['confidence']*100)
         conn.close()
     except Exception as e:
         print("[identifyErrno {0}] {1}".format(e.errno, e.strerror))
@@ -188,7 +190,7 @@ def main():
     #add_face("Akarsh", "akarsh3.jpeg")
     #create_person("Akarsh", "akarsh1.jpeg")
     #train()
-    identify("bg.jpeg")
+    identify("team.jpeg")
     #alert("+12674750425", "+12674607556", "Someone unknown is by the door.\n", "test.jpg")
     #identify("twopeople.jpeg")
 
