@@ -1,0 +1,9 @@
+#Bash file that runs the main.py file on a captured image and returns the analysis
+
+while true
+do
+	ffmpeg -f video4linux2 -i /dev/video0 -vframes 1 image.jpeg
+	python3 /home/root/vandy/TRAKR/main.py
+	rm -rf image.jpeg
+	sleep 2
+done
