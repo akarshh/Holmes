@@ -19,6 +19,8 @@ jsonHeaders = {
     'Content-Type': 'application/json',
     'Ocp-Apim-Subscription-Key': '8431e00bcfdb4754971235abc0859926',
 }
+apiKey = "7995cf1030a94257be203bb54a37bc80";
+voiceHeader = {"Ocp-Apim-Subscription-Key": apiKey}
 
 params = urllib.parse.urlencode({
     # Request parameters
@@ -70,7 +72,7 @@ def identify(image):
         f = open("counter.txt", "r")
         counter = int(f.read())
         f.close()
-
+        arrNames = []
         for key in data:
             if key == 'error':
                 pass
@@ -89,13 +91,15 @@ def identify(image):
                 response = conn.getresponse()
                 data = response.read().decode('utf-8')
                 data = json.loads(data)
+                arrNames.append(data['name'])
                 print(data['name'])
                 streamer.log("Name:", data['name'])
                 streamer.log("Status:", "Inside")
                 streamer.log("Recognized:", ":thumbsup:")
                 counter = counter + 1
                 streamer.log("People at home", counter)
-
+        if len(arrNames) > 0:
+            welcome(arrNames)
         conn.close()
         f2 = open("counter.txt", "w")
         f2.write(str(counter))
@@ -182,6 +186,54 @@ def upload(image):
         image = client.upload_from_path(image, anon=True)
         return image["link"]
 
+def welcome(arrNames):
+    if len(arrNames) == 1:
+        msg = "Welcome {}. Have a seat".format(arrNames[0])
+    else:
+        msg = "Welcome "
+        for i in range(len(arrNames) - 1):
+            msg = msg + arrNames[i] + ', '
+        msg = msg + 'and' + arrNames[len(arrNames) - 1] + '. Have a seat'
+    params = ""
+    # AccessTokenUri = "https://api.cognitive.microsoft.com/sts/v1.0/issueToken";
+    AccessTokenHost = "api.cognitive.microsoft.com"
+    path = "/sts/v1.0/issueToken"
+
+    # Connect to server to get the Access Token
+    print("Connect to server to get the Access Token")
+    conn = http.client.HTTPSConnection(AccessTokenHost)
+    conn.request("POST", path, params, voiceHeader)
+    response = conn.getresponse()
+    print(response.status, response.reason)
+
+    data = response.read()
+    conn.close()
+
+    accesstoken = data.decode("UTF-8")
+    print("Access Token: " + accesstoken)
+
+    body = "<speak version='1.0' xml:lang='en-us'><voice xml:lang='en-us' xml:gender='Female' name='Microsoft Server Speech Text to Speech Voice (en-US, ZiraRUS)'>{}</voice></speak>".format(msg)
+
+    header = {"Content-type": "audio/wav; samplerate = 8000",
+               "X-Microsoft-OutputFormat": "riff-8khz-8bit-mono-mulaw",
+               "Authorization": "Bearer " + accesstoken,
+               "X-Search-AppId": "07D3234E49CE426DAA29772419F436CA",
+               "X-Search-ClientID": "1ECFAE91408841A480F00935DC390960",
+               "User-Agent": "TTSForPython"}
+
+    # Connect to server to synthesize the wave
+    print("\nConnect to server to synthesize the wave")
+    conn = http.client.HTTPSConnection("speech.platform.bing.com")
+    conn.request("POST", "/synthesize", body, header)
+    response = conn.getresponse()
+    print(response.status, response.reason)
+    print(type(response))
+    data = response.read()
+    f = open('sample', 'wb')
+    f.write(data)
+    f.close()
+    subprocess.call("gst-launch-1.0 filesrc location= /home/root/vandy/TRAKR/sample ! wavparse ! pulsesink");
+
 
 # def pushToInitialState(data):
 #     streamer = Streamer(bucket_name="TRAKR", bucket_key="VandyHacks",
@@ -201,7 +253,8 @@ def main():
     #add_face("Akarsh", "akarsh3.jpeg")
     #create_person("Gigi Hadid", "gigi.jpeg")
     #train()
-    identify("image.jpeg")
+    #welcome(["Mark", "David", "Will"])
+    identify("team.jpeg")
     #alert("+12674750425", "+12674607556", "Someone unknown is by the door.\n", "test.jpg")
     #identify("twopeople.jpeg")
 
