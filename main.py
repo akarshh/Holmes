@@ -65,7 +65,12 @@ def identify(image):
         response = conn.getresponse()
         data = response.read().decode('utf-8')
         data = json.loads(data)
-        print(data)
+
+        #Code for tracking counter from a local file
+        f = open("counter.txt", "r")
+        counter = int(f.read())
+        f.close()
+
         for key in data:
             if key == 'error':
                 pass
@@ -74,9 +79,10 @@ def identify(image):
 
                 #Code added to push to Initial State
                 streamer.log("Name:", "Unknown")
-                streamer.log("Status:", "Inside")
+                streamer.log("Status:", "Awaiting")
                 streamer.log("Recognized:", ":thumbsdown:")
                 streamer.log("Confidence:", 0)
+                streamer.log("People at home", counter)
             else:
                 pId = key['candidates'][0]['personId']
                 conn.request("GET", "/face/v1.0/persongroups/contacts/persons/{}?".format(pId), "{null}",
@@ -89,7 +95,14 @@ def identify(image):
                 streamer.log("Status:", "Inside")
                 streamer.log("Recognized:", ":thumbsup:")
                 streamer.log("Confidence:",  key['candidates'][0]['confidence']*100)
+                counter = counter + 1
+                streamer.log("People at home", counter)
+
         conn.close()
+        f2 = open("counter.txt", "w")
+        f2.write(str(counter))
+        f2.close()
+        streamer.close()
     except Exception as e:
         print("[identifyErrno {0}] {1}".format(e.errno, e.strerror))
     #if face does not exist in person group, twilio unknown
