@@ -4,6 +4,7 @@ import urllib.request, urllib.parse, urllib.error, base64
 from twilio.rest import TwilioRestClient
 from imgurpython import ImgurClient
 import time
+import Image
 from ISStreamer.Streamer import Streamer
 
 imgurId = "71d7de68d35561e"
@@ -70,6 +71,7 @@ def identify(image):
         f = open("counter.txt", "r")
         counter = int(f.read())
         f.close()
+        image = Image.open("image.jpeg")
 
         for key in data:
             if key == 'error':
@@ -95,6 +97,7 @@ def identify(image):
                 streamer.log("Recognized:", ":thumbsup:")
                 counter = counter + 1
                 streamer.log("People at home", counter)
+                streamer.log("Image", image)
 
         conn.close()
         f2 = open("counter.txt", "w")
