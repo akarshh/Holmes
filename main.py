@@ -208,7 +208,7 @@ def welcome(arrNames):
         msg = "Hi "
         for i in range(len(arrNames) - 1):
             msg = msg + arrNames[i] + ', '
-        msg = msg + 'and' + arrNames[len(arrNames) - 1] + ', I am Alexa.Have a seat. What music would you like?'
+        msg = msg + 'and' + arrNames[len(arrNames) - 1] + ', I am Alexa. Have a seat. What music would you like?'
     params = ""
     # AccessTokenUri = "https://api.cognitive.microsoft.com/sts/v1.0/issueToken";
     AccessTokenHost = "api.cognitive.microsoft.com"

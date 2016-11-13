@@ -247,7 +247,7 @@ def welcome(arrNames):
     f = open('sample', 'wb')
     f.write(data)
     f.close()
-    subprocess.call("gst-launch-1.0 filesrc location= /home/root/vandy/TRAKR/sample ! wavparse ! pulsesink",shell=True);
+    subprocess.call("gst-launch-1.0 filesrc location= /home/root/vandy/Holmes/sample ! wavparse ! pulsesink",shell=True);
 
 
 # def pushToInitialState(data):
