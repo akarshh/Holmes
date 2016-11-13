@@ -65,8 +65,11 @@ def identify(image):
         response = conn.getresponse()
         data = response.read().decode('utf-8')
         data = json.loads(data)
+        print(data)
         for key in data:
-            if len(key['candidates']) == 0:
+            if key == 'error':
+                pass
+            elif len(key['candidates']) == 0:
                 alert("+12674750425", "+12674607556", "Someone unknown is by the door.\n", image)
 
                 #Code added to push to Initial State
@@ -185,7 +188,7 @@ def main():
     #add_face("Akarsh", "akarsh3.jpeg")
     #create_person("Akarsh", "akarsh1.jpeg")
     #train()
-    identify("team.jpeg")
+    identify("bg.jpeg")
     #alert("+12674750425", "+12674607556", "Someone unknown is by the door.\n", "test.jpg")
     #identify("twopeople.jpeg")
 
