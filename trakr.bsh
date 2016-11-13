@@ -5,5 +5,4 @@ do
 	ffmpeg -f video4linux2 -i /dev/video0 -vframes 1 image.jpeg
 	python3 /home/root/vandy/TRAKR/main.py
 	rm -rf image.jpeg
-	sleep 2
 done
