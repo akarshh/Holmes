@@ -3,6 +3,8 @@ import http.client
 import urllib.request, urllib.parse, urllib.error, base64
 from twilio.rest import TwilioRestClient
 from imgurpython import ImgurClient
+import time
+from ISStreamer.Streamer import Streamer
 
 imgurId = "71d7de68d35561e"
 imgurSec = "ad08635e559a3d4faee8347900733df066af3177"
@@ -53,6 +55,10 @@ def detect(image):
 def identify(image):
     faceId1 = detect(image)
     body = str({'faceIds': faceId1, 'personGroupId': 'contacts'})
+
+    #Line added to push to Initial State
+    streamer = Streamer(bucket_name="TRAKR", bucket_key="VandyHacks",
+                        access_key="AmGWapG1yu5XWZmVxudVeJGXcTRFOIuy")
     try:
         conn = http.client.HTTPSConnection('api.projectoxford.ai')
         conn.request("POST", "/face/v1.0/identify?", body, jsonHeaders)
@@ -62,6 +68,11 @@ def identify(image):
         for key in data:
             if len(key['candidates']) == 0:
                 alert("+12674750425", "+12674607556", "Someone unknown is by the door.\n", image)
+
+                #Code added to push to Initial State
+                streamer.log("Name:", "Unknown")
+                streamer.log("Status:", "Inside")
+                streamer.log("Recognized:", "No")
             else:
                 pId = key['candidates'][0]['personId']
                 conn.request("GET", "/face/v1.0/persongroups/contacts/persons/{}?".format(pId), "{null}",
@@ -70,6 +81,9 @@ def identify(image):
                 data = response.read().decode('utf-8')
                 data = json.loads(data)
                 print(data['name'])
+                streamer.log("Name:", data['name'])
+                streamer.log("Status:", "Inside")
+                streamer.log("Recognized:", "Yes")
         conn.close()
     except Exception as e:
         print("[identifyErrno {0}] {1}".format(e.errno, e.strerror))
@@ -153,11 +167,25 @@ def upload(image):
         return image["link"]
 
 
+# def pushToInitialState(data):
+#     streamer = Streamer(bucket_name="TRAKR", bucket_key="VandyHacks",
+#                         access_key="AmGWapG1yu5XWZmVxudVeJGXcTRFOIuy")
+#     if (data == {}):
+#         streamer.log("Name:", "Unknown")
+#         streamer.log("Status:", "Inside")
+#         streamer.log("Recognized:", "No")
+#     else:
+#         for item in data:
+#             streamer.log("Name:", item['name'])
+#             streamer.log("Status:", "Inside")
+#             streamer.log("Recognized:", "Yes")
+
+
 def main():
     #add_face("Akarsh", "akarsh3.jpeg")
     #create_person("Akarsh", "akarsh1.jpeg")
     #train()
-    identify("team.jpeg")
+    identify("akarsh.jpeg")
     #alert("+12674750425", "+12674607556", "Someone unknown is by the door.\n", "test.jpg")
     #identify("twopeople.jpeg")
 
