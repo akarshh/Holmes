@@ -81,7 +81,6 @@ def identify(image):
                 streamer.log("Name:", "Unknown")
                 streamer.log("Status:", "Awaiting")
                 streamer.log("Recognized:", ":thumbsdown:")
-                streamer.log("Confidence:", 0)
                 streamer.log("People at home", counter)
             else:
                 pId = key['candidates'][0]['personId']
@@ -94,7 +93,6 @@ def identify(image):
                 streamer.log("Name:", data['name'])
                 streamer.log("Status:", "Inside")
                 streamer.log("Recognized:", ":thumbsup:")
-                streamer.log("Confidence:",  key['candidates'][0]['confidence']*100)
                 counter = counter + 1
                 streamer.log("People at home", counter)
 
