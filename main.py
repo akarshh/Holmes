@@ -107,6 +107,10 @@ def identify(image):
                     streamer.log("Time of entry :sunny:", datetime.now().strftime("%H:%M:%S"))
                 counter = counter + 1
                 streamer.log("People at home :house:", counter)
+        if len(arrNames) == 1:
+            conn.request("POST", "/face/v1.0/persongroups/contacts/persons/{}/persistedFaces?".format(pId),
+                         convert_to_bin(image), headers)
+            train()
         if len(arrNames) > 0:
             welcome(arrNames)
         conn.close()
@@ -196,14 +200,15 @@ def upload(image):
         image = client.upload_from_path(image, anon=True)
         return image["link"]
 
+
 def welcome(arrNames):
     if len(arrNames) == 1:
-        msg = "Welcome {}. Have a seat".format(arrNames[0])
+        msg = "Hi {}, I am Alexa. Have a seat. What music can I play for you?".format(arrNames[0])
     else:
-        msg = "Welcome "
+        msg = "Hi "
         for i in range(len(arrNames) - 1):
             msg = msg + arrNames[i] + ', '
-        msg = msg + 'and' + arrNames[len(arrNames) - 1] + '. Have a seat'
+        msg = msg + 'and' + arrNames[len(arrNames) - 1] + ', I am Alexa.Have a seat. What music would you like?'
     params = ""
     # AccessTokenUri = "https://api.cognitive.microsoft.com/sts/v1.0/issueToken";
     AccessTokenHost = "api.cognitive.microsoft.com"
