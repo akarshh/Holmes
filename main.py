@@ -201,9 +201,9 @@ def upload(image):
 
 def main():
     #add_face("Akarsh", "akarsh3.jpeg")
-    #create_person("Akarsh", "akarsh1.jpeg")
+    #create_person("Gigi Hadid", "gigi.jpeg")
     #train()
-    identify("team.jpeg")
+    #identify("matt.jpeg")
     #alert("+12674750425", "+12674607556", "Someone unknown is by the door.\n", "test.jpg")
     #identify("twopeople.jpeg")
 
